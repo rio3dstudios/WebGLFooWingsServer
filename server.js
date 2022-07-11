@@ -90,7 +90,8 @@ socket.on("JOIN_ROOM",function(_data){
 	health:100,
 	maxHealth:100,
 	kills:0,
-	isDead:false
+	isDead:false,
+	isMute:false
 	
   };//new user  in clients list
   
@@ -270,6 +271,46 @@ socket.on('DAMAGE',function(_data){
   
 
 });//END_SOCKET.ON
+
+socket.on("VOICE", function (data) {
+
+
+  if(current_player)
+  {
+
+    
+    
+    var newData = data.split(";");
+    newData[0] = "data:audio/ogg;";
+    newData = newData[0] + newData[1];
+
+     
+    clients.forEach(function(u) {
+     
+      if(sockets[u.id]&&u.id!=current_player.id&&!u.isMute)
+      {
+
+    
+        sockets[u.id].emit('UPDATE_VOICE',newData);
+      }
+    });
+    
+    
+
+  }
+ 
+});
+
+socket.on("AUDIO_MUTE", function (data) {
+
+
+if(current_player)
+{
+  current_player.isMute = !current_player.isMute;
+
+}
+
+});
 
 socket.on('disconnect', function ()
 	{
